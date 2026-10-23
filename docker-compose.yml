@@ -1,0 +1,37 @@
+# MongoDB for local development, with an optional web page to look at (and edit) the data.
+#
+#   docker compose up -d mongo                      just the database (use with npm run dev)
+#   docker compose --profile tools up -d            database + data viewer at http://localhost:8081
+#   docker compose --profile app up -d --build      database + the API in a container
+#
+# Use  MONGO_URI=mongodb://localhost:27017/erp  in backend/.env.
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports: ["27017:27017"]
+    volumes: [mongo-data:/data/db]
+
+  mongo-express:
+    profiles: ["tools"]
+    image: mongo-express:1
+    restart: unless-stopped
+    depends_on: [mongo]
+    ports: ["8081:8081"]
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: change-me-locally
+
+  backend:
+    profiles: ["app"]
+    build: ./backend
+    restart: unless-stopped
+    depends_on: [mongo]
+    ports: ["5000:5000"]
+    env_file: ./backend/.env
+    environment:
+      MONGO_URI: mongodb://mongo:27017/erp
+
+volumes:
+  mongo-data:

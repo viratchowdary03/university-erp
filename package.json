@@ -1,0 +1,14 @@
+{
+  "name": "university-erp",
+  "private": true,
+  "description": "Run the whole ERP (API + website) from one place",
+  "scripts": {
+    "setup": "npm install --prefix backend && npm install --prefix frontend",
+    "dev": "node scripts/dev.mjs",
+    "seed:all": "npm run seed:all --prefix backend",
+    "test": "npm test --prefix backend",
+    "db:status": "npm run db:status --prefix backend",
+    "check": "node scripts/check-frontend.mjs && node scripts/smoke-render.mjs",
+    "test:all": "npm test --prefix backend && npm run check"
+  }
+}
